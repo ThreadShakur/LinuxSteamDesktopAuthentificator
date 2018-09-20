@@ -100,7 +100,6 @@ ipc.on('decline_offer', function (event, data) {
   }
 })
 
-global.accounts = JSON.parse(fs.readFileSync('data.json'))
 
 var sync_datafile = function () {
   let temp = Object.assign({}, global.accounts)
@@ -113,6 +112,7 @@ var sync_datafile = function () {
   fs.writeFileSync('data.json', JSON.stringify(global.accounts))
 }
 
+
 var find_acc = function (login) {
   for (let i in global.accounts) {
     if (global.accounts[i].name == login) {
@@ -122,6 +122,7 @@ var find_acc = function (login) {
 
   return null
 }
+
 
 var finalize_login = function (login, password, shared_secret, identity_secret, steamguard, oAuthToken, client, acc_creation = false, revocation_code = null) {
   let account = find_acc(login)
@@ -160,16 +161,26 @@ var finalize_login = function (login, password, shared_secret, identity_secret, 
 function createWindow () {
   // Create the browser window.
 
-  win = new BrowserWindow({width: 400, height: 630,  icon: 'logo.png'})
+  win = new BrowserWindow({width: 400, height: 630,  icon: 'icon.png', title: 'Steam Auth Linux'})
   win.setResizable(false)
   // и загрузит index.html приложение.
   win.loadFile('index.html')
+
+  win.once('ready-to-show', () => {
+    win.show()
+  })
 
   //win.webContents.openDevTools()
   //win.loadURL('http://127.0.0.1:8080')
 }
   
 app.on('ready', createWindow)
+
+try {
+  global.accounts = JSON.parse(fs.readFileSync('data.json'))
+} catch (e) {
+  global.accounts = []
+}
 
 const menuTemplate = [
   {
